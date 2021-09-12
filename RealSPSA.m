@@ -7,6 +7,7 @@ eps = 1e-6; maxit = 3000;
 x = zeros(n,1);
 verbose = false;
 
+% Used the parameters suggested in the SPSA paper
 alpha = 0.602;
 gamma = 0.101;
 A = 100;
@@ -108,11 +109,9 @@ if (k>=maxit) || (num_queries(k+1)>param.MAX_QUERIES)
 end
 num_iter = k;
 objval_seq = objval_seq(1:num_iter+1);
-sol_seq = sol_seq(1:num_iter+1);
 num_queries = num_queries(1:num_iter+1);
 
 % put into a struct for output
-% Result.sol = sol_seq;
 Result.objval_seq = objval_seq;
 Result.num_iter = num_iter;
 Result.num_queries = num_queries;

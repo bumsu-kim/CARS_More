@@ -38,7 +38,6 @@ num_queries(1) = 1;
 
 %% ITERATION
 
-
 r_seq = zeros(maxit+1,1); % records the sampling radius (gamma)
 
 beta = 0.5;
@@ -120,18 +119,10 @@ if (k==maxit) || (max(num_queries)>param.MAX_QUERIES)
 end
 num_iter = k;
 objval_seq = objval_seq(1:num_iter+1);
-% sol_seq = sol_seq(1:num_iter+1);
-% gamma_seq = gamma_seq(1:num_iter+1);
 num_queries = num_queries(1:num_iter+1);
 r_seq = r_seq(1:num_iter+1);
-% ndelta = ndelta(1:num_iter);
-% put into a struct for output
-if isfield(param,'save_x')
-    if param.save_x
-        %         Result.sol = sol_seq;
-    end
-end
 
+% put into a struct for output
 Result.objval_seq = objval_seq;
 Result.num_iter = num_iter;
 Result.num_queries = num_queries;

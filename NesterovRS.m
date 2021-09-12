@@ -1,12 +1,12 @@
 function Result = NesterovRS(fparam, param)
-algname = 'CARS';
+algname = 'Nesterov-Spokoiny';
 %% INITIALIZATION
 Result = struct;
 n = param.n;
 eps = 1e-6; maxit = 100;
 
 x = zeros(n,1); % initial sol (x0)
-randAlg = 'U'; % uniform
+randAlg = 'U'; % uniform distribution
 verbose = false;
 
 
@@ -30,27 +30,18 @@ if isfield(fparam, 'fmin')
 end
 f = fparam.f;
 objval_seq = zeros(maxit+1,1);
-gamma_seq = zeros(maxit+1,1);
 objval_seq(1) = f(x); %initialization
 num_queries = zeros(maxit+1,1);
 num_queries(1) = 1;
-damped_cnt = 0;
 
 %% ITERATION
 mu_init = 1e-4;
-mu_max = 1;
 mu = mu_init;
-mu_cnt = 0;
-gd_cnt = 0;
 
 mu_seq = zeros(maxit+1,1);
 mu_seq(1) = mu;
-alpha = 1/4/(n+4);0.5;
+alpha = 1/4/(n+4); % used the same parameter in STP paper (bergou et al. 2019)
 
-n_dir_grad = 1; ceil(n/2);
-been_there = false;
-stuck_count = 0;
-CARScounter = zeros(4,1);
 for k=1:maxit
     num_queries(k+1) = num_queries(k);
     mu =  1/sqrt(k+1);
@@ -78,25 +69,15 @@ for k=1:maxit
             % delta not changed
         end
     end
-    x = x + delta;
-%     if norm(delta) < 0.99*mu
-%         been_there = true;
-%     end
-%     if been_there || (fxnew-objval_seq(k) < 1e-6)
-%         stuck_count = stuck_count + 1;
-%     else
-%         mu = mu_init;
-%         stuck_count = 0;
-%     end
-%     if mu>1e-8
-%         mu = 0.5* mu + norm(delta) * mu;
-%     end
-%     mu= 1/sqrt(k+2);
+    
+    x = x + delta; % update the solution
     
     if isnan(fxnew) % should never happen..
-        disp('errrrrrr');
+        disp('error -- f(x) from NS is nan');
+        x = param.x0;
+        continue;
     end
-%     x = x+delta; % update the solution
+    
     objval_seq(k+1) = fxnew;
     
     if isfield(fparam, 'fmin')
@@ -124,29 +105,14 @@ end
 
 num_iter = k;
 objval_seq = objval_seq(1:num_iter+1);
-% sol_seq = sol_seq(1:num_iter+1);
-gamma_seq = gamma_seq(1:num_iter+1);
 num_queries = num_queries(1:num_iter+1);
 mu_seq = mu_seq(1:num_iter+1);
 
 % put into a struct for output
-if isfield(param,'save_x')
-    if param.save_x
-%         Result.sol = sol_seq;
-    end
-end
 Result.objval_seq = objval_seq;
-Result.gamma_seq = gamma_seq;
 Result.num_iter = num_iter;
 Result.num_queries = num_queries;
 Result.converged = converged;
-Result.damped_cnt = damped_cnt;
-Result.mu_cnt = mu_cnt;
-Result.gd_cnt = gd_cnt;
 Result.mu_seq = mu_seq;
 Result.sol = x;
-% Result.k_lambda = k_lambda_condition;
-if verbose>1
-    disp(CARScounter');
-end
 end

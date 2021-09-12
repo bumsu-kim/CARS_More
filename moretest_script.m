@@ -38,7 +38,8 @@ if verbose>1
     disp(['Starting ', algname{i}, ' ...']);
 end
 tic;
-Results{i} = CARS(fparam, param, 5);
+Num_Quad_Pts = 5;
+Results{i} = CARS(fparam, param, Num_Quad_Pts);
 etime2(i) = toc;
 Results{i}.name = algname{i};
 

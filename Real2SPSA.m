@@ -11,6 +11,7 @@ eps = 1e-6; maxit = 3000;
 x = zeros(n,1);
 verbose = false;
 
+% Used the parameters suggested in the 2SPSA paper
 alpha = 0.602;
 gamma = 0.101;
 A = 100;
@@ -101,7 +102,6 @@ for k=1:maxit
         Hk_bar = eye(n);
     end
     delta = -ak * (Hk_dbar\gk);
-%     delta = ak* EstStep(Hk_bar,gk);
     xnew = x + delta;
     
     if norm(xnew-x) > tol1
@@ -117,12 +117,11 @@ for k=1:maxit
     end
     
     
-    
     % update
     sol_seq{k+1} = x;
     objval_seq(k+1) = fx;
     
-    if (fx < fparam.fmin + eps) % || norm(delta)<eps % or fx-fxnew < eps ?
+    if (fx < fmin + eps) % || norm(delta)<eps % or fx-fxnew < eps ?
         if verbose>1
             disp(['Real 2-SPSA Converged in ', num2str(k),' steps. Exit the loop']);
             disp(['Function val = ' , num2str(objval_seq(k+1))]);
@@ -144,11 +143,9 @@ if (k>=maxit) || (num_queries(k+1)>param.MAX_QUERIES)
 end
 num_iter = k;
 objval_seq = objval_seq(1:num_iter+1);
-sol_seq = sol_seq(1:num_iter+1);
 num_queries = num_queries(1:num_iter+1);
 
 % put into a struct for output
-% Result.sol = sol_seq;
 Result.objval_seq = objval_seq;
 Result.num_iter = num_iter;
 Result.num_queries = num_queries;
